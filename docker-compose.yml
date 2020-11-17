@@ -1,0 +1,44 @@
+version: '3'
+services: 
+    nginx: 
+        image: nginx:latest
+        ports:
+            - "80:80"
+            - "443:443"
+        networks: 
+            sistema:
+                ipv4_address: 172.19.0.6     
+        volumes:
+            - ./nginx/:/etc/nginx/
+        depends_on:
+            - login
+            - mve
+
+    login:
+        image: node:latest
+        container_name: login
+        networks:
+            sistema:
+                ipv4_address: 172.19.0.7
+        volumes:
+            - ./modules/login:/var/www
+        working_dir: /var/www
+        command: bash -c "npm start"
+
+    mve:
+        image: node:latest
+        container_name: mve
+        networks:
+            sistema:
+                ipv4_address: 172.19.0.8
+        volumes:
+            - ./modules/mve:/var/www
+        working_dir: /var/www
+        command: bash -c "npm start"
+
+networks: 
+    sistema:
+        driver: bridge
+        ipam:
+         config:
+           - subnet: 172.19.0.0/16
